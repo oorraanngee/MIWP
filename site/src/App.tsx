@@ -153,7 +153,8 @@ export default function App() {
             </div>
           ) : activeSection === 'store' ? (
             <div className="max-w-[800px]">
-               <div className="border-b border-[#ccc] pb-2 mb-6">
+               <div className="border-b border-[#ccc] pb-2 mb-6 flex items-center space-x-2">
+                 <img src="/MIWPstore.png" alt="MIWP Store" className="w-[28px] h-[28px] object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
                  <h2 className="text-lg font-bold text-[#333]">{currentSectionLabel}</h2>
                </div>
                
@@ -200,11 +201,9 @@ export default function App() {
                ) : (
                  <div className="space-y-2">
                     <div className="flex items-center space-x-2">
-                      <div className="w-3.5 h-3.5 border-[1.5px] border-gray-500 rounded-sm flex items-center justify-center font-bold text-gray-500 text-[10px]">
-                        -
-                      </div>
+                      <img src="/minus.png" alt="minus" className="w-3.5 h-3.5 object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
                       <span 
-                        className="text-[14px] font-bold text-[#0055aa] hover:underline cursor-pointer"
+                        className="text-[14px] font-bold text-[#3a3a3a] hover:bg-[#336699] hover:text-[#ffffff] cursor-pointer"
                         onClick={() => setActiveArticle('overview')}
                       >
                         Обзор MIWP store
