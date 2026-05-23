@@ -1,11 +1,40 @@
 import React, { useState } from 'react';
 import { Settings, Camera, Tv, Music, Gamepad2, Globe, ShoppingBag } from 'lucide-react';
 
-type Section = 'main' | 'settings' | 'photo' | 'video' | 'music' | 'game' | 'network' | 'store';
+type Section = 'main' | 'settings' | 'photo' | 'video' | 'music' | 'game' | 'network' | 'store' | 'menu' | 'search';
 
 export default function App() {
   const [activeSection, setActiveSection] = useState<Section>('main');
   const [activeArticle, setActiveArticle] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [submittedQuery, setSubmittedQuery] = useState('');
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      setActiveSection('search');
+      setActiveArticle(null);
+      setSubmittedQuery(searchQuery);
+    }
+  };
+
+  const searchableContent = [
+    {
+      title: 'Главная страница',
+      section: 'main',
+      content: 'MIWP Hub Руководство пользователя ВАЖНО Данное руководство предназначено для системного программного обеспечения Media Interface Web Program версии 1.0 или более поздней. Media Interface Web Program НЕ связан с Sony и НЕ поддерживается Sony. Периодически мы можем изменять некоторые службы и функции системы MIWP™ или прекращать их действие.',
+    },
+    {
+      title: 'Обзор MIWP store',
+      section: 'store',
+      article: 'overview',
+      content: 'Обзор MIWP™ store MIWP™ store — это интернет-магазин созданный специально для MIWP™. В нём можно скачать игры, приложения и музыку. Навигационная панель Выбранный элемент Описание Кнопка Скачать В ФОНЕ СЕЙЧАС',
+    }
+  ];
+
+  const searchResults = searchableContent.filter(item => 
+    submittedQuery && (item.title.toLowerCase().includes(submittedQuery.toLowerCase()) || 
+    item.content.toLowerCase().includes(submittedQuery.toLowerCase()))
+  );
 
   type NavItem = {
     id: Section;
@@ -24,7 +53,9 @@ export default function App() {
     { id: 'store', label: 'MIWP™ store', img: '/MIWPstore.png' },
   ];
 
-  const currentSectionLabel = navItems.find((i) => i.id === activeSection)?.label;
+  const currentSectionLabel = activeSection === 'menu' ? 'Меню MIWP™' : 
+                              activeSection === 'search' ? 'Результаты поиска' :
+                              navItems.find((i) => i.id === activeSection)?.label;
 
   return (
     <div className="flex flex-col min-h-screen font-sans bg-white text-gray-900">
@@ -61,8 +92,14 @@ export default function App() {
               type="text" 
               className="w-48 h-6 px-2 text-xs text-black border-none focus:outline-none bg-white" 
               placeholder=""
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             />
-            <button className="h-6 px-3 bg-gradient-to-b from-[#ffffff] to-[#d6d6d6] hover:from-white hover:to-gray-100 text-black text-xs font-bold border-l border-gray-400 flex items-center justify-center">
+            <button 
+              onClick={handleSearch}
+              className="h-6 px-3 bg-gradient-to-b from-[#ffffff] to-[#d6d6d6] hover:from-white hover:to-gray-100 text-black text-xs font-bold border-l border-gray-400 flex items-center justify-center"
+            >
               Поиск
             </button>
           </div>
@@ -76,13 +113,13 @@ export default function App() {
           {/* Top Main Menu Button */}
           <div 
             onClick={() => {
-              setActiveSection('main');
+              setActiveSection('menu');
               setActiveArticle(null);
             }}
             className={`
               w-full bg-white border border-[#d6d6d6] rounded p-3 mb-4 cursor-pointer
               hover:bg-[#f6f6f6] transition-colors flex items-center
-              ${activeSection === 'main' ? 'font-black text-black shadow-inner shadow-gray-200' : 'font-bold text-gray-800'}
+              ${activeSection === 'menu' ? 'font-black text-black shadow-inner shadow-gray-200' : 'font-bold text-gray-800'}
             `}
           >
             <span className="text-[13px]">Меню MIWP™</span>
@@ -133,8 +170,6 @@ export default function App() {
                 <ul className="list-disc pl-6 space-y-3">
                   <li>
                     Media Interface Web Program НЕ связан с Sony и НЕ поддерживается Sony.
-                    <br />
-                    <a href="#" className="text-[#0055aa] hover:underline">&gt; Подробнее</a>
                   </li>
                   <li>
                     Периодически мы можем изменять некоторые службы и функции системы MIWP™ или прекращать их действие.
@@ -153,10 +188,12 @@ export default function App() {
             </div>
           ) : activeSection === 'store' ? (
             <div className="max-w-[800px]">
-               <div className="border-b border-[#ccc] pb-2 mb-6 flex items-center space-x-2">
-                 <img src="/MIWPstore.png" alt="MIWP Store" className="w-[28px] h-[28px] object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
-                 <h2 className="text-lg font-bold text-[#333]">{currentSectionLabel}</h2>
-               </div>
+               {!activeArticle && (
+                 <div className="border-b border-[#ccc] pb-2 mb-6 flex items-center space-x-2">
+                   <img src="/MIWPstore.png" alt="MIWP Store" className="w-[28px] h-[28px] object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
+                   <h2 className="text-lg font-bold text-[#333]">{currentSectionLabel}</h2>
+                 </div>
+               )}
                
                {activeArticle === 'overview' ? (
                  <div className="text-[13.5px] text-[#222]">
@@ -203,7 +240,7 @@ export default function App() {
                     <div className="flex items-center space-x-2">
                       <img src="/minus.png" alt="minus" className="w-3.5 h-3.5 object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
                       <span 
-                        className="text-[14px] font-bold text-[#3a3a3a] hover:bg-[#336699] hover:text-[#ffffff] cursor-pointer"
+                        className="text-[14px] font-bold text-[#3a3a3a] hover:bg-[#336699] hover:text-[#ffffff] cursor-pointer px-1"
                         onClick={() => setActiveArticle('overview')}
                       >
                         Обзор MIWP store
@@ -212,6 +249,42 @@ export default function App() {
                  </div>
                )}
             </div>
+          ) : activeSection === 'search' ? (
+            <div className="max-w-[800px]">
+               <div className="border-b border-[#ccc] pb-2 mb-6">
+                 <h2 className="text-lg font-bold text-[#333]">Результаты поиска</h2>
+               </div>
+               {searchResults.length > 0 ? (
+                 <div className="space-y-4">
+                   {searchResults.map((result, idx) => (
+                     <div key={idx} className="border-b border-[#eee] pb-3">
+                       <h3 
+                         className="text-[15px] font-bold text-[#0055aa] hover:underline cursor-pointer"
+                         onClick={() => {
+                           setActiveSection(result.section as Section);
+                           if (result.article) {
+                             setActiveArticle(result.article);
+                           } else {
+                             setActiveArticle(null);
+                           }
+                         }}
+                       >
+                         {result.title}
+                       </h3>
+                       <p className="text-[13px] text-gray-600 mt-1 line-clamp-2">
+                         {result.content}
+                       </p>
+                     </div>
+                   ))}
+                 </div>
+               ) : (
+                 <p className="text-[13px] text-gray-500">
+                   По запросу «{submittedQuery}» ничего не найдено.
+                 </p>
+               )}
+            </div>
+          ) : activeSection === 'menu' ? (
+             <div className="max-w-[800px]"></div>
           ) : (
             <div className="max-w-[800px]">
                <div className="border-b border-[#ccc] pb-2 mb-6">
