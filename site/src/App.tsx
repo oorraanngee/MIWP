@@ -1,13 +1,112 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Settings, Camera, Tv, Music, Gamepad2, Globe, ShoppingBag } from 'lucide-react';
 
 type Section = 'main' | 'settings' | 'photo' | 'video' | 'music' | 'game' | 'network' | 'store' | 'menu' | 'search';
 
 export default function App() {
-  const [activeSection, setActiveSection] = useState<Section>('main');
-  const [activeArticle, setActiveArticle] = useState<string | null>(null);
+  const [activeSection, _setActiveSection] = useState<Section>('main');
+  const [activeArticle, _setActiveArticle] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [submittedQuery, setSubmittedQuery] = useState('');
+  const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({});
+
+  const activeSectionRef = React.useRef<Section>('main');
+  activeSectionRef.current = activeSection;
+
+  const sectionToPath: Record<Section, string> = {
+    main: '/',
+    settings: '/Settings',
+    photo: '/Photo',
+    video: '/Video',
+    music: '/Music',
+    game: '/Game',
+    network: '/Network',
+    store: '/Store',
+    menu: '/Menu',
+    search: '/Search'
+  };
+
+  const articleToPath: Record<string, string> = {
+    'bg-color': '/Settings/Fon/Cvet-fona',
+    'bg-wave-speed': '/Settings/Fon/Skorost-volny',
+    'bg-particle-speed': '/Settings/Fon/Skorost-chastic',
+    'bg-wave': '/Settings/Fon/Volna',
+    'bg-particles': '/Settings/Fon/Chasticy',
+    'sys-about-sys': '/Settings/Sistema/Ob-sisteme',
+    'sys-about-app': '/Settings/Sistema/Ob-programme',
+    'overview': '/Store/Obzor-MIWP-store',
+    'cwm-overview': '/Menu/Menyu-CWM',
+    'tv-channels': '/Video/TV-kanaly'
+  };
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname.toLowerCase();
+      
+      const articleMatch = Object.entries(articleToPath).find(([_, v]) => v.toLowerCase() === path);
+      if (articleMatch) {
+         const article = articleMatch[0];
+         let section: Section = 'main';
+         if (article.startsWith('bg-') || article.startsWith('sys-')) section = 'settings';
+         else if (article === 'overview') section = 'store';
+         else if (article === 'cwm-overview') section = 'menu';
+         else if (article === 'tv-channels') section = 'video';
+
+         _setActiveSection(section);
+         _setActiveArticle(article);
+         if (article.startsWith('bg-')) setOpenCategories(prev => ({...prev, bg: true}));
+         if (article.startsWith('sys-')) setOpenCategories(prev => ({...prev, sys: true}));
+         return;
+      }
+
+      const sectionMatch = Object.entries(sectionToPath).find(([_, v]) => v.toLowerCase() === path);
+      if (sectionMatch) {
+         _setActiveSection(sectionMatch[0] as Section);
+         _setActiveArticle(null);
+         return;
+      }
+
+      // Default
+      _setActiveSection('main');
+      _setActiveArticle(null);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    handlePopState(); // Init on mount
+
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const navigateTo = (section: Section, article: string | null = null, forceSyncUrl = true) => {
+    activeSectionRef.current = section;
+    _setActiveSection(section);
+    _setActiveArticle(article);
+    
+    if (forceSyncUrl) {
+      let nextPath = '/';
+      if (article) {
+        nextPath = articleToPath[article] || '/';
+      } else {
+        nextPath = sectionToPath[section] || '/';
+      }
+      
+      if (window.location.pathname.toLowerCase() !== nextPath.toLowerCase()) {
+        window.history.pushState({}, '', nextPath);
+      }
+    }
+  };
+
+  const setActiveSection = (section: Section) => {
+    navigateTo(section, null);
+  };
+
+  const setActiveArticle = (article: string | null) => {
+    navigateTo(activeSectionRef.current, article);
+  };
+
+  const toggleCategory = (category: string) => {
+    setOpenCategories(prev => ({ ...prev, [category]: !prev[category] }));
+  };
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
@@ -28,6 +127,60 @@ export default function App() {
       section: 'store',
       article: 'overview',
       content: 'Обзор MIWP™ store MIWP™ store — это интернет-магазин созданный специально для MIWP™. В нём можно скачать игры, приложения и музыку. Навигационная панель Выбранный элемент Описание Кнопка Скачать В ФОНЕ СЕЙЧАС',
+    },
+    {
+      title: 'Меню CWM™ (CrossWebMenu™)',
+      section: 'menu',
+      article: 'cwm-overview',
+      content: 'Использование меню CWM™ Пользовательский интерфейс системы MIWP™ называется CWM™ (CrossWebMenu™). B горизонтальном ряду отображаются функции и категории системы, а в вертикальной колонке отображаются элементы, которые могут быть использованы в любой категории. Перемещение по разделам и элементам осуществляется кнопками Подтверждение выбора элемента Отмена операции Перемещение по меню Использование панели управления При воспроизведении материалов нажмите любую кнопку или дёрните мышью для отображения панели управления. Элементы панели управления зависят от воспроизводимого контента.',
+    },
+    {
+      title: 'Цвет фона',
+      section: 'settings',
+      article: 'bg-color',
+      content: 'Здесь вы можете выбрать цвет фона для CWM™. Доступные цвета: синий, серый, фиолетовый, зелёный, свой. При выборе варианта «Свой» вам потребуется ввести HEX-код цвета.'
+    },
+    {
+      title: 'Скорость волны',
+      section: 'settings',
+      article: 'bg-wave-speed',
+      content: 'Здесь вы можете выбрать скорость фоновой волны CWM™. Доступные варианты: «Медленный», «Средний», «Быстрый».'
+    },
+    {
+      title: 'Скорость частиц',
+      section: 'settings',
+      article: 'bg-particle-speed',
+      content: 'Здесь вы можете выбрать скорость фоновых частиц CWM™. Доступные варианты: «Медленный», «Средний», «Быстрый».'
+    },
+    {
+      title: 'Волна',
+      section: 'settings',
+      article: 'bg-wave',
+      content: 'Здесь вы можете выбрать отображение волны CWM™. Доступные варианты: «Вкл.», «Откл.».'
+    },
+    {
+      title: 'Частицы',
+      section: 'settings',
+      article: 'bg-particles',
+      content: 'Здесь вы можете выбрать отображение частиц CWM™. Доступные варианты: «Вкл.», «Откл.».'
+    },
+    {
+      title: 'Об системе',
+      section: 'settings',
+      article: 'sys-about-sys',
+      content: 'Здесь вы можете узнать ОС, процессор и архитектуру вашего устройства.'
+    },
+    {
+      title: 'Об программе',
+      section: 'settings',
+      article: 'sys-about-app',
+      content: 'Здесь доступна информация о приложении, интерфейсе и текущей версии. По умолчанию указаны следующие данные: Программа: MIWP™ (Media Interface Web Program™) Интерфейс: CWM™ (CrossWebMenu™) Версия: 1.0'
+    },
+    {
+      title: 'ТВ каналы',
+      section: 'video',
+      article: 'tv-channels',
+      content: 'В разделе «ТВ / Видео» вы можете найти приложение «ТВ-каналы». При нажатии откроется список, в котором можно выбрать нужный ТВ-канал. Управлять ТВ-плеером можно с помощью кнопок. Также поддерживается управление мышью (ЛКМ и колёсико). Элементы плеера: (1) Стоп / Пауза. (2) Перемотка на 1 секунду вперёд / назад. (3) Следующий / предыдущий канал. (4) Таймлайн. (5) Список доступных каналов. Перемещение по списку осуществляется кнопками, выбор — кнопкой. Также можно управлять мышью: навести курсор на канал, прокрутить список колёсиком и нажать ЛКМ. Для выхода из этого меню нажмите или кликните ЛКМ мимо меню. (6) Название канала. Примечания: Плеер подгружает трансляцию из интернета в реальном времени, поэтому для его работы необходимо активное сетевое подключение. Плеер использует каналы из iptv-org.'
     }
   ];
 
@@ -53,7 +206,7 @@ export default function App() {
     { id: 'store', label: 'MIWP™ store', img: '/MIWPstore.png' },
   ];
 
-  const currentSectionLabel = activeSection === 'menu' ? 'Меню MIWP™' : 
+  const currentSectionLabel = activeSection === 'menu' ? 'Меню CWM™' : 
                               activeSection === 'search' ? 'Результаты поиска' :
                               navItems.find((i) => i.id === activeSection)?.label;
 
@@ -122,7 +275,7 @@ export default function App() {
               ${activeSection === 'menu' ? 'font-black text-black shadow-inner shadow-gray-200' : 'font-bold text-gray-800'}
             `}
           >
-            <span className="text-[13px]">Меню MIWP™</span>
+            <span className="text-[13px]">Меню CWM™</span>
           </div>
 
           {/* Navigation Items */}
@@ -132,7 +285,6 @@ export default function App() {
                 key={item.id}
                 onClick={() => {
                   setActiveSection(item.id);
-                  setActiveArticle(null);
                 }}
                 className={`flex items-center space-x-3 px-3 py-3 border-b border-[#f0f0f0] last:border-b-0 cursor-pointer overflow-hidden transition-colors ${
                   activeSection === item.id 
@@ -143,7 +295,7 @@ export default function App() {
                 {item.icon ? (
                   <item.icon className="w-[22px] h-[22px] text-[#4a4a4a] shrink-0" strokeWidth={2.5} />
                 ) : (
-                  <img src={item.img} alt={item.label} className="w-[22px] h-[22px] object-contain shrink-0 drop-shadow-sm" />
+                  <img src={item.img} alt={item.label} className="w-[22px] h-[22px] object-contain shrink-0" />
                 )}
                 <span className="text-[13px] font-bold text-[#333] tracking-tight">{item.label}</span>
               </div>
@@ -156,7 +308,7 @@ export default function App() {
           {activeSection === 'main' ? (
             <div className="max-w-[800px]">
               <h1 className="text-xl font-bold mb-6 text-black tracking-tight leading-snug">
-                MIWP™ Hub (Media Interface Web Program Hub)<br />Руководство пользователя
+                MIWP™ (Media Interface Web Program™)<br />Руководство пользователя
               </h1>
               
               <div className="space-y-4 text-[13.5px] text-[#222]">
@@ -197,9 +349,14 @@ export default function App() {
                
                {activeArticle === 'overview' ? (
                  <div className="text-[13.5px] text-[#222]">
-                   <h1 className="text-xl font-bold mb-6 text-black tracking-tight leading-snug">
+                   <h1 className="text-xl font-bold mb-2 text-black tracking-tight leading-snug">
                      Обзор MIWP™ store
                    </h1>
+                   <div className="text-[12px] mb-6">
+                     <span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => setActiveArticle(null)}>MIWP™ store</span>
+                     <span className="text-gray-500 mx-1">&gt;</span>
+                     <span className="text-gray-800">Обзор MIWP™ store</span>
+                   </div>
                    <p className="mb-4">
                      MIWP™ store — это интернет-магазин созданный специально для MIWP™. В нём можно скачать игры, приложения и музыку.
                    </p>
@@ -284,7 +441,330 @@ export default function App() {
                )}
             </div>
           ) : activeSection === 'menu' ? (
-             <div className="max-w-[800px]"></div>
+             <div className="max-w-[800px]">
+               {!activeArticle && (
+                 <div className="border-b border-[#ccc] pb-2 mb-6">
+                   <h2 className="text-lg font-bold text-[#333]">{currentSectionLabel}</h2>
+                 </div>
+               )}
+               
+               {activeArticle === 'cwm-overview' ? (
+                 <div className="text-[13.5px] text-[#222]">
+                   <h1 className="text-xl font-bold mb-2 text-black tracking-tight leading-snug">
+                     Меню CWM™ (CrossWebMenu™)
+                   </h1>
+                   <div className="text-[12px] mb-6">
+                     <span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => setActiveArticle(null)}>Меню CWM™</span>
+                     <span className="text-gray-500 mx-1">&gt;</span>
+                     <span className="text-gray-800">Меню CWM™ (CrossWebMenu™)</span>
+                   </div>
+                   
+                   <h2 className="font-bold text-[14px] mb-2 mt-6">Использование меню CWM™</h2>
+                   <p className="mb-4">
+                     Пользовательский интерфейс системы MIWP™ называется CWM™ (CrossWebMenu™). B горизонтальном ряду отображаются функции и категории системы, а в вертикальной колонке отображаются элементы, которые могут быть использованы в любой категории. Перемещение по разделам и элементам осуществляется кнопками 
+                     {' '}<img src="/down.png" className="inline-block h-8 align-middle mx-1" alt="down" onError={(e) => e.currentTarget.style.display = 'none'} />, 
+                     {' '}<img src="/up.png" className="inline-block h-8 align-middle mx-1" alt="up" onError={(e) => e.currentTarget.style.display = 'none'} />, 
+                     {' '}<img src="/right.png" className="inline-block h-8 align-middle mx-1" alt="right" onError={(e) => e.currentTarget.style.display = 'none'} />, 
+                     {' '}<img src="/left.png" className="inline-block h-8 align-middle mx-1" alt="left" onError={(e) => e.currentTarget.style.display = 'none'} />.
+                   </p>
+                   
+                   <div className="my-6">
+                     <img src="/menucwm.png" alt="CWM Menu Interface" className="max-w-full" onError={(e) => e.currentTarget.style.display = 'none'} />
+                   </div>
+
+                   <table className="w-full border-collapse mb-6 text-[13px] border border-[#d6d6d6]">
+                     <thead>
+                       <tr className="bg-[#f0f0f0]">
+                         <th className="border border-[#ccc] px-3 py-2 text-left font-bold w-1/3">Кнопка</th>
+                         <th className="border border-[#ccc] px-3 py-2 text-left font-bold">Что делает</th>
+                       </tr>
+                     </thead>
+                     <tbody>
+                       <tr className="bg-white">
+                         <td className="border border-[#ccc] px-3 py-2">
+                           Кнопка <img src="/Enter.png" className="inline-block h-8 align-middle mx-1" alt="Enter" onError={(e) => e.currentTarget.style.display = 'none'} />
+                         </td>
+                         <td className="border border-[#ccc] px-3 py-2">Подтверждение выбора элемента</td>
+                       </tr>
+                       <tr className="bg-[#f9f9f9]">
+                         <td className="border border-[#ccc] px-3 py-2">
+                           Кнопки <img src="/Backspace.png" className="inline-block h-8 align-middle mx-1" alt="Backspace" onError={(e) => e.currentTarget.style.display = 'none'} />, 
+                           <img src="/Esc.png" className="inline-block h-8 align-middle mx-1" alt="Esc" onError={(e) => e.currentTarget.style.display = 'none'} />
+                         </td>
+                         <td className="border border-[#ccc] px-3 py-2">Отмена операции.</td>
+                       </tr>
+                       <tr className="bg-white">
+                         <td className="border border-[#ccc] px-3 py-2">
+                           Кнопки <img src="/down.png" className="inline-block h-8 align-middle mx-1" alt="down" onError={(e) => e.currentTarget.style.display = 'none'} />, 
+                           <img src="/up.png" className="inline-block h-8 align-middle mx-1" alt="up" onError={(e) => e.currentTarget.style.display = 'none'} />, 
+                           <img src="/right.png" className="inline-block h-8 align-middle mx-1" alt="right" onError={(e) => e.currentTarget.style.display = 'none'} />, 
+                           <img src="/left.png" className="inline-block h-8 align-middle mx-1" alt="left" onError={(e) => e.currentTarget.style.display = 'none'} />
+                         </td>
+                         <td className="border border-[#ccc] px-3 py-2">Перемещение по меню.</td>
+                       </tr>
+                     </tbody>
+                   </table>
+
+                   <h2 className="font-bold text-[14px] mb-2 mt-8">Использование панели управления</h2>
+                   <p className="mb-4">
+                     При воспроизведении материалов нажмите любую кнопку или дёрните мышью для отображения панели управления. Элементы панели управления зависят от воспроизводимого контента.
+                   </p>
+                 </div>
+               ) : (
+                 <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <img src="/minus.png" alt="minus" className="w-3.5 h-3.5 object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
+                      <span 
+                        className="text-[14px] font-bold text-[#3a3a3a] hover:bg-[#336699] hover:text-[#ffffff] cursor-pointer px-1"
+                        onClick={() => setActiveArticle('cwm-overview')}
+                      >
+                        Меню CWM™ (CrossWebMenu™)
+                      </span>
+                    </div>
+                 </div>
+               )}
+             </div>
+          ) : activeSection === 'settings' ? (
+             <div className="max-w-[800px]">
+               {!activeArticle && (
+                 <div className="border-b border-[#ccc] pb-2 mb-6">
+                   <h2 className="text-lg font-bold text-[#333]">{currentSectionLabel}</h2>
+                 </div>
+               )}
+               
+               {activeArticle === 'bg-color' ? (
+                 <div className="text-[13.5px] text-[#222]">
+                   <h1 className="text-xl font-bold mb-2 text-black tracking-tight leading-snug">Цвет фона</h1>
+                   <div className="text-[12px] mb-6">
+                     <span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => setActiveArticle(null)}>Настройки</span>
+                     <span className="text-gray-500 mx-1">&gt;</span>
+                     <span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => { setOpenCategories(prev => ({ ...prev, bg: true })); setActiveArticle(null); }}>Фон</span>
+                     <span className="text-gray-500 mx-1">&gt;</span>
+                     <span className="text-gray-800">Цвет фона</span>
+                   </div>
+                   <p className="mb-4">
+                     Здесь вы можете выбрать цвет фона для CWM™.<br />
+                     Доступные цвета: синий, серый, фиолетовый, зелёный, свой.<br />
+                     При выборе варианта «Свой» вам потребуется ввести HEX-код цвета.
+                   </p>
+                 </div>
+               ) : activeArticle === 'bg-wave-speed' ? (
+                 <div className="text-[13.5px] text-[#222]">
+                   <h1 className="text-xl font-bold mb-2 text-black tracking-tight leading-snug">Скорость волны</h1>
+                   <div className="text-[12px] mb-6">
+                     <span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => setActiveArticle(null)}>Настройки</span>
+                     <span className="text-gray-500 mx-1">&gt;</span>
+                     <span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => { setOpenCategories(prev => ({ ...prev, bg: true })); setActiveArticle(null); }}>Фон</span>
+                     <span className="text-gray-500 mx-1">&gt;</span>
+                     <span className="text-gray-800">Скорость волны</span>
+                   </div>
+                   <p className="mb-4">
+                     Здесь вы можете выбрать скорость фоновой волны CWM™.<br />
+                     Доступные варианты: «Медленный», «Средний», «Быстрый».
+                   </p>
+                 </div>
+               ) : activeArticle === 'bg-particle-speed' ? (
+                 <div className="text-[13.5px] text-[#222]">
+                   <h1 className="text-xl font-bold mb-2 text-black tracking-tight leading-snug">Скорость частиц</h1>
+                   <div className="text-[12px] mb-6">
+                     <span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => setActiveArticle(null)}>Настройки</span>
+                     <span className="text-gray-500 mx-1">&gt;</span>
+                     <span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => { setOpenCategories(prev => ({ ...prev, bg: true })); setActiveArticle(null); }}>Фон</span>
+                     <span className="text-gray-500 mx-1">&gt;</span>
+                     <span className="text-gray-800">Скорость частиц</span>
+                   </div>
+                   <p className="mb-4">
+                     Здесь вы можете выбрать скорость фоновых частиц CWM™.<br />
+                     Доступные варианты: «Медленный», «Средний», «Быстрый».
+                   </p>
+                 </div>
+               ) : activeArticle === 'bg-wave' ? (
+                 <div className="text-[13.5px] text-[#222]">
+                   <h1 className="text-xl font-bold mb-2 text-black tracking-tight leading-snug">Волна</h1>
+                   <div className="text-[12px] mb-6">
+                     <span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => setActiveArticle(null)}>Настройки</span>
+                     <span className="text-gray-500 mx-1">&gt;</span>
+                     <span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => { setOpenCategories(prev => ({ ...prev, bg: true })); setActiveArticle(null); }}>Фон</span>
+                     <span className="text-gray-500 mx-1">&gt;</span>
+                     <span className="text-gray-800">Волна</span>
+                   </div>
+                   <p className="mb-4">
+                     Здесь вы можете выбрать отображение волны CWM™.<br />
+                     Доступные варианты: «Вкл.», «Откл.».
+                   </p>
+                 </div>
+               ) : activeArticle === 'bg-particles' ? (
+                 <div className="text-[13.5px] text-[#222]">
+                   <h1 className="text-xl font-bold mb-2 text-black tracking-tight leading-snug">Частицы</h1>
+                   <div className="text-[12px] mb-6">
+                     <span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => setActiveArticle(null)}>Настройки</span>
+                     <span className="text-gray-500 mx-1">&gt;</span>
+                     <span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => { setOpenCategories(prev => ({ ...prev, bg: true })); setActiveArticle(null); }}>Фон</span>
+                     <span className="text-gray-500 mx-1">&gt;</span>
+                     <span className="text-gray-800">Частицы</span>
+                   </div>
+                   <p className="mb-4">
+                     Здесь вы можете выбрать отображение частиц CWM™.<br />
+                     Доступные варианты: «Вкл.», «Откл.».
+                   </p>
+                 </div>
+               ) : activeArticle === 'sys-about-sys' ? (
+                 <div className="text-[13.5px] text-[#222]">
+                   <h1 className="text-xl font-bold mb-2 text-black tracking-tight leading-snug">Об системе</h1>
+                   <div className="text-[12px] mb-6">
+                     <span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => setActiveArticle(null)}>Настройки</span>
+                     <span className="text-gray-500 mx-1">&gt;</span>
+                     <span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => { setOpenCategories(prev => ({ ...prev, sys: true })); setActiveArticle(null); }}>Система</span>
+                     <span className="text-gray-500 mx-1">&gt;</span>
+                     <span className="text-gray-800">Об системе</span>
+                   </div>
+                   <p className="mb-4">
+                     Здесь вы можете узнать ОС, процессор и архитектуру вашего устройства.
+                   </p>
+                 </div>
+               ) : activeArticle === 'sys-about-app' ? (
+                 <div className="text-[13.5px] text-[#222]">
+                   <h1 className="text-xl font-bold mb-2 text-black tracking-tight leading-snug">Об программе</h1>
+                   <div className="text-[12px] mb-6">
+                     <span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => setActiveArticle(null)}>Настройки</span>
+                     <span className="text-gray-500 mx-1">&gt;</span>
+                     <span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => { setOpenCategories(prev => ({ ...prev, sys: true })); setActiveArticle(null); }}>Система</span>
+                     <span className="text-gray-500 mx-1">&gt;</span>
+                     <span className="text-gray-800">Об программе</span>
+                   </div>
+                   <p className="mb-4">
+                     Здесь доступна информация о приложении, интерфейсе и текущей версии.
+                   </p>
+                   <p className="mb-4">
+                     По умолчанию указаны следующие данные:<br/>
+                     Программа: MIWP™ (Media Interface Web Program™)<br/>
+                     Интерфейс: CWM™ (CrossWebMenu™)<br/>
+                     Версия: 1.0
+                   </p>
+                 </div>
+               ) : (
+                 <div className="space-y-4 text-[14px]">
+                    <div>
+                      <div 
+                        className="flex items-center space-x-2 cursor-pointer group"
+                        onClick={() => toggleCategory('bg')}
+                      >
+                        <img src={openCategories['bg'] ? "/minus.png" : "/plus.png"} alt="toggle" className="w-3.5 h-3.5 object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
+                        <span className="font-bold text-[#3a3a3a] group-hover:bg-[#336699] group-hover:text-[#ffffff] px-1">Фон</span>
+                      </div>
+                      {openCategories['bg'] && (
+                        <div className="ml-6 mt-2 space-y-2">
+                           <div className="flex items-center before:content-['•'] before:mr-2 before:text-gray-500">
+                             <span className="text-[#3a3a3a] hover:bg-[#336699] hover:text-[#ffffff] cursor-pointer px-1" onClick={() => setActiveArticle('bg-color')}>Цвет фона</span>
+                           </div>
+                           <div className="flex items-center before:content-['•'] before:mr-2 before:text-gray-500">
+                             <span className="text-[#3a3a3a] hover:bg-[#336699] hover:text-[#ffffff] cursor-pointer px-1" onClick={() => setActiveArticle('bg-wave-speed')}>Скорость волны</span>
+                           </div>
+                           <div className="flex items-center before:content-['•'] before:mr-2 before:text-gray-500">
+                             <span className="text-[#3a3a3a] hover:bg-[#336699] hover:text-[#ffffff] cursor-pointer px-1" onClick={() => setActiveArticle('bg-particle-speed')}>Скорость Частиц</span>
+                           </div>
+                           <div className="flex items-center before:content-['•'] before:mr-2 before:text-gray-500">
+                             <span className="text-[#3a3a3a] hover:bg-[#336699] hover:text-[#ffffff] cursor-pointer px-1" onClick={() => setActiveArticle('bg-wave')}>Волна</span>
+                           </div>
+                           <div className="flex items-center before:content-['•'] before:mr-2 before:text-gray-500">
+                             <span className="text-[#3a3a3a] hover:bg-[#336699] hover:text-[#ffffff] cursor-pointer px-1" onClick={() => setActiveArticle('bg-particles')}>Частицы</span>
+                           </div>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div>
+                      <div 
+                        className="flex items-center space-x-2 cursor-pointer group"
+                        onClick={() => toggleCategory('sys')}
+                      >
+                        <img src={openCategories['sys'] ? "/minus.png" : "/plus.png"} alt="toggle" className="w-3.5 h-3.5 object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
+                        <span className="font-bold text-[#3a3a3a] group-hover:bg-[#336699] group-hover:text-[#ffffff] px-1">Система</span>
+                      </div>
+                      {openCategories['sys'] && (
+                        <div className="ml-6 mt-2 space-y-2">
+                           <div className="flex items-center before:content-['•'] before:mr-2 before:text-gray-500">
+                             <span className="text-[#3a3a3a] hover:bg-[#336699] hover:text-[#ffffff] cursor-pointer px-1" onClick={() => setActiveArticle('sys-about-sys')}>Об системе</span>
+                           </div>
+                           <div className="flex items-center before:content-['•'] before:mr-2 before:text-gray-500">
+                             <span className="text-[#3a3a3a] hover:bg-[#336699] hover:text-[#ffffff] cursor-pointer px-1" onClick={() => setActiveArticle('sys-about-app')}>Об программе</span>
+                           </div>
+                        </div>
+                      )}
+                    </div>
+                 </div>
+               )}
+             </div>
+          ) : activeSection === 'video' ? (
+             <div className="max-w-[800px]">
+               {!activeArticle && (
+                 <div className="border-b border-[#ccc] pb-2 mb-6">
+                   <h2 className="text-lg font-bold text-[#333]">{currentSectionLabel}</h2>
+                 </div>
+               )}
+               
+               {activeArticle === 'tv-channels' ? (
+                 <div className="text-[13.5px] text-[#222]">
+                   <h1 className="text-xl font-bold mb-2 text-black tracking-tight leading-snug">ТВ каналы</h1>
+                   <div className="text-[12px] mb-6">
+                     <span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => setActiveArticle(null)}>ТВ/видео</span>
+                     <span className="text-gray-500 mx-1">&gt;</span>
+                     <span className="text-gray-800">ТВ каналы</span>
+                   </div>
+                   <p className="mb-4">
+                     В разделе «ТВ / Видео» вы можете найти приложение «ТВ-каналы». При нажатии <img src="/Enter.png" className="inline-block h-8 align-middle mx-1" alt="Enter" onError={(e) => e.currentTarget.style.display = 'none'} /> откроется список, в котором можно выбрать нужный ТВ-канал.
+                   </p>
+                   <div className="my-6">
+                     <img src="/tvselectchannel.png" alt="Select Channel" className="max-w-[500px] w-full" onError={(e) => e.currentTarget.style.display = 'none'} />
+                   </div>
+                   <p className="mb-4">
+                     Управлять ТВ-плеером можно с помощью кнопок <img src="/up.png" className="inline-block h-8 align-middle mx-1" alt="up" onError={(e) => e.currentTarget.style.display = 'none'} />, <img src="/down.png" className="inline-block h-8 align-middle mx-1" alt="down" onError={(e) => e.currentTarget.style.display = 'none'} />, <img src="/left.png" className="inline-block h-8 align-middle mx-1" alt="left" onError={(e) => e.currentTarget.style.display = 'none'} />, <img src="/right.png" className="inline-block h-8 align-middle mx-1" alt="right" onError={(e) => e.currentTarget.style.display = 'none'} />, <img src="/Enter.png" className="inline-block h-8 align-middle mx-1" alt="Enter" onError={(e) => e.currentTarget.style.display = 'none'} /> и <img src="/Backspace.png" className="inline-block h-8 align-middle mx-1" alt="Backspace" onError={(e) => e.currentTarget.style.display = 'none'} />. Также поддерживается управление мышью (ЛКМ и колёсико). 
+                   </p>
+                   <div className="my-6">
+                     <img src="/tvplayer.png" alt="TV Player" className="max-w-[500px] w-full" onError={(e) => e.currentTarget.style.display = 'none'} />
+                   </div>
+                   <h2 className="font-bold text-[14px] mb-2 mt-6">Элементы плеера:</h2>
+                   <div className="space-y-1 mb-4">
+                     <p>(1) Стоп / Пауза.</p>
+                     <p>(2) Перемотка на 1 секунду вперёд / назад.</p>
+                     <p>(3) Следующий / предыдущий канал.</p>
+                     <p>(4) Таймлайн.</p>
+                     <p>(5) Список доступных каналов.</p>
+                   </div>
+                   <div className="my-6">
+                     <img src="/channellist.png" alt="Channel List" className="max-w-[500px] w-full" onError={(e) => e.currentTarget.style.display = 'none'} />
+                   </div>
+                   <p className="mb-4">
+                     Перемещение по списку осуществляется кнопками <img src="/up.png" className="inline-block h-8 align-middle mx-1" alt="up" onError={(e) => e.currentTarget.style.display = 'none'} /> и <img src="/down.png" className="inline-block h-8 align-middle mx-1" alt="down" onError={(e) => e.currentTarget.style.display = 'none'} />, выбор — кнопкой <img src="/Enter.png" className="inline-block h-8 align-middle mx-1" alt="Enter" onError={(e) => e.currentTarget.style.display = 'none'} />. Также можно управлять мышью: навести курсор на канал, прокрутить список колёсиком и нажать ЛКМ. Для выхода из этого меню нажмите <img src="/left.png" className="inline-block h-8 align-middle mx-1" alt="left" onError={(e) => e.currentTarget.style.display = 'none'} />, <img src="/Backspace.png" className="inline-block h-8 align-middle mx-1" alt="Backspace" onError={(e) => e.currentTarget.style.display = 'none'} /> или кликните ЛКМ мимо меню.
+                   </p>
+                   <p className="mb-6">
+                     (6) Название канала.
+                   </p>
+                   
+                   <div className="border-t border-[#ccc] pt-4 mt-8">
+                     <h2 className="font-bold text-[14px] mb-2">Примечания:</h2>
+                     <ul className="list-disc pl-5 space-y-1">
+                       <li>Плеер подгружает трансляцию из интернета в реальном времени, поэтому для его работы необходимо активное сетевое подключение.</li>
+                       <li>Плеер использует каналы из iptv-org.</li>
+                     </ul>
+                   </div>
+                 </div>
+               ) : (
+                 <div className="space-y-4 text-[14px]">
+                    <div>
+                      <div className="flex items-center space-x-2">
+                        <img src="/minus.png" alt="minus" className="w-3.5 h-3.5 object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
+                        <span 
+                          className="font-bold text-[#3a3a3a] hover:bg-[#336699] hover:text-[#ffffff] cursor-pointer px-1"
+                          onClick={() => setActiveArticle('tv-channels')}
+                        >
+                          ТВ каналы
+                        </span>
+                      </div>
+                    </div>
+                 </div>
+               )}
+             </div>
           ) : (
             <div className="max-w-[800px]">
                <div className="border-b border-[#ccc] pb-2 mb-6">
