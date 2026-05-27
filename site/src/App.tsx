@@ -947,7 +947,7 @@ export default function App() {
       {/* Footer */}
       <footer className="bg-gradient-to-b from-[#3a3a3a] to-[#050505] text-[#b3b3b3] text-[11px] px-6 py-2 border-t border-[#4a4a4a] flex justify-center shrink-0">
         <div className="flex w-full max-w-[1024px] justify-between items-center">
-          <div>23.05.2026-23.05.2026 © MIWP oorraannggee. Все права защищены.</div>
+          <div>23.05.2026-27.05.2026 © MIWP oorraannggee. Все права защищены.</div>
           <div className="flex items-center space-x-2">
              {activeSection !== 'main' && (
                <button 
