@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Settings, Camera, Tv, Music, Gamepad2, Globe, ShoppingBag } from 'lucide-react';
 
-type Section = 'main' | 'settings' | 'photo' | 'video' | 'music' | 'game' | 'network' | 'store' | 'menu' | 'search';
+type Section = 'main' | 'settings' | 'photo' | 'video' | 'music' | 'game' | 'network' | 'store' | 'menu' | 'search' | 'document';
 
 export default function App() {
   const [activeSection, _setActiveSection] = useState<Section>('main');
@@ -23,7 +23,8 @@ export default function App() {
     network: '/Network',
     store: '/Store',
     menu: '/Menu',
-    search: '/Search'
+    search: '/Search',
+    document: '/document/O-dannom-Rukovodstve'
   };
 
   const articleToPath: Record<string, string> = {
@@ -36,7 +37,10 @@ export default function App() {
     'sys-about-app': '/Settings/Sistema/Ob-programme',
     'overview': '/Store/Obzor-MIWP-store',
     'cwm-overview': '/Menu/Menyu-CWM',
-    'tv-channels': '/Video/TV-kanaly'
+    'tv-channels': '/Video/TV-kanaly',
+    'about-guide': '/document/O-dannom-Rukovodstve',
+    'copyright': '/document/Avtorskie-prava-i-torgovye-marki',
+    'toc': '/document/Soderzhanie'
   };
 
   useEffect(() => {
@@ -51,6 +55,7 @@ export default function App() {
          else if (article === 'overview') section = 'store';
          else if (article === 'cwm-overview') section = 'menu';
          else if (article === 'tv-channels') section = 'video';
+         else if (article === 'about-guide' || article === 'copyright' || article === 'toc') section = 'document';
 
          _setActiveSection(section);
          _setActiveArticle(article);
@@ -181,6 +186,24 @@ export default function App() {
       section: 'video',
       article: 'tv-channels',
       content: 'В разделе «ТВ / Видео» вы можете найти приложение «ТВ-каналы». При нажатии откроется список, в котором можно выбрать нужный ТВ-канал. Управлять ТВ-плеером можно с помощью кнопок. Также поддерживается управление мышью (ЛКМ и колёсико). Элементы плеера: (1) Стоп / Пауза. (2) Перемотка на 1 секунду вперёд / назад. (3) Следующий / предыдущий канал. (4) Таймлайн. (5) Список доступных каналов. Перемещение по списку осуществляется кнопками, выбор — кнопкой. Также можно управлять мышью: навести курсор на канал, прокрутить список колёсиком и нажать ЛКМ. Для выхода из этого меню нажмите или кликните ЛКМ мимо меню. (6) Название канала. Примечания: Плеер подгружает трансляцию из интернета в реальном времени, поэтому для его работы необходимо активное сетевое подключение. Плеер использует каналы из iptv-org.'
+    },
+    {
+      title: 'О данном Руководстве',
+      section: 'document',
+      article: 'about-guide',
+      content: 'О данном Руководстве Это руководство содержит подробную информацию по использованию веб программы MIWP™. Для получения информации об функциях программы. Просмотр руководства с помощью MIWP™ Для просмотра руководства в программе MIWP™ с помощью веб-браузера используйте основные функции, приведенные ниже. Управление сайтом мышью: используйте браузер с помощью мыши (ЛКМ, ПКМ, колёсико, движение мыши). открыть настройки. см. браузер.'
+    },
+    {
+      title: 'Содержание',
+      section: 'document',
+      article: 'toc',
+      content: 'Содержание Начало Главная страница О данном Руководстве Авторские права и торговые марки Содержание Меню CWM™ Настройки Фон Система Фото ТВ / видео Музыка Игра Сеть MIWP™ store'
+    },
+    {
+      title: 'Авторские права и торговые марки',
+      section: 'document',
+      article: 'copyright',
+      content: 'Авторские права и торговые марки Данный документ определяет статус интеллектуальной собственности веб-приложения MIWP™ и интерфейса CWM™. Разработчик и авторские права Автор и создатель проекта: oorraannggee. Весь исходный код веб-приложения MIWP™ (Media Interface Web Program™) и пользовательского интерфейса CWM™ (CrossWebMenu™) написан автором с нуля. Официальные ресурсы проекта. Правовой статус и правообладание Названия MIWP™, Media Interface Web Program™, CWM™, CrossWebMenu™ и логотипы являются уникальными наименованиями и лицами кода и интерфейса, созданными автором проекта. Юридический отказ от сторонних связей Все права на код, дизайн и интерфейс CWM™ защищены автором'
     }
   ];
 
@@ -262,6 +285,7 @@ export default function App() {
       {/* Main Content Area */}
       <div className="flex flex-1 w-full max-w-[1024px] mx-auto overflow-hidden">
         {/* Sidebar */}
+        {(activeSection !== 'document' || activeArticle === 'toc') && (
         <aside className="w-[260px] bg-[#ebebeb] border-r border-[#d6d6d6] flex flex-col p-3 shrink-0 overflow-y-auto">
           {/* Top Main Menu Button */}
           <div 
@@ -302,6 +326,7 @@ export default function App() {
             ))}
           </div>
         </aside>
+        )}
 
         {/* Content Panel */}
         <main className="flex-1 bg-white p-8 md:p-12 overflow-y-auto">
@@ -332,10 +357,9 @@ export default function App() {
 
               {/* Bottom links */}
               <div className="mt-16 pt-6 border-t border-[#e0e0e0] text-[12px] text-[#0055aa] leading-relaxed flex flex-wrap gap-x-2">
-                <a href="#" className="hover:underline">Важные замечания для пользователей</a> <span className="text-gray-400">|</span>
-                <a href="#" className="hover:underline">О данном Руководстве</a> <span className="text-gray-400">|</span>
-                <a href="#" className="hover:underline">Авторские права и торговые марки</a> <span className="text-gray-400">|</span>
-                <a href="#" className="hover:underline">Содержание</a> <span className="text-gray-400"></span>
+                <span className="hover:underline cursor-pointer" onClick={() => navigateTo('document', 'about-guide')}>О данном Руководстве</span> <span className="text-gray-400">|</span>
+                <span className="hover:underline cursor-pointer" onClick={() => navigateTo('document', 'copyright')}>Авторские права и торговые марки</span> <span className="text-gray-400">|</span>
+                <span className="hover:underline cursor-pointer" onClick={() => navigateTo('document', 'toc')}>Содержание</span> <span className="text-gray-400"></span>
               </div>
             </div>
           ) : activeSection === 'store' ? (
@@ -762,6 +786,148 @@ export default function App() {
                         </span>
                       </div>
                     </div>
+                 </div>
+               )}
+             </div>
+          ) : activeSection === 'document' ? (
+             <div className="max-w-[800px]">
+               {(!activeArticle || activeArticle === 'about-guide') && (
+                 <div className="text-[13.5px] text-[#222]">
+                   <h1 className="text-xl font-bold mb-6 text-black tracking-tight leading-snug">
+                     О данном Руководстве
+                   </h1>
+                   <div className="border-t border-[#ccc] my-6"></div>
+                   <p className="mb-4">
+                     Это руководство содержит подробную информацию по использованию веб программы MIWP™. Для получения информации об функциях программы.
+                   </p>
+                   <h2 className="font-bold text-[14px] mb-2 mt-8">Просмотр руководства с помощью MIWP™</h2>
+                   <p className="mb-4">
+                     Для просмотра руководства в программе MIWP™ с помощью веб-браузера используйте основные функции, приведенные ниже.
+                   </p>
+                   <p className="mb-4">
+                     Управление сайтом мышью: используйте браузер с помощью мыши (ЛКМ, ПКМ, колёсико, движение мыши).<br/>
+                     <img src="/shift.png" className="inline-block h-8 align-middle mx-1" alt="Shift" onError={(e) => e.currentTarget.style.display = 'none'} /> + <img src="/s.png" className="inline-block h-8 align-middle mx-1" alt="S" onError={(e) => e.currentTarget.style.display = 'none'} /> открыть настройки. <span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => setActiveSection('network')}>см. браузер</span>.
+                   </p>
+                 </div>
+               )}
+
+               {activeArticle === 'copyright' && (
+                 <div className="text-[13.5px] text-[#222]">
+                   <h1 className="text-xl font-bold mb-6 text-black tracking-tight leading-snug">
+                     Авторские права и торговые марки
+                   </h1>
+                   <div className="border-t border-[#ccc] my-6"></div>
+                   <p className="mb-4">
+                     Данный документ определяет статус интеллектуальной собственности веб-приложения MIWP™ и интерфейса CWM™.
+                   </p>
+
+                   <h3 className="font-bold text-[16px] mb-2 mt-8">Разработчик и авторские права</h3>
+                   <ul className="list-disc pl-6 space-y-2 mb-4">
+                     <li><strong>Автор и создатель проекта:</strong> oorraannggee (псевдоним разработчика).</li>
+                     <li>Весь исходный код веб-приложения <strong>MIWP™ (Media Interface Web Program™)</strong> и пользовательского интерфейса <strong>CWM™ (CrossWebMenu™)</strong> написан автором с нуля.</li>
+                   </ul>
+
+                   <h3 className="font-bold text-[16px] mb-2 mt-8">Официальные ресурсы проекта</h3>
+                   <p className="mb-2">Официальными сайтами проекта являются следующие веб-адреса, созданные и поддерживаемые автором:</p>
+                   <ul className="list-disc pl-6 space-y-2 mb-4">
+                     <li>Главный сайт проекта: <a href="https://miwp.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-[#0055aa] hover:underline">miwp.vercel.app</a></li>
+                     <li>Руководство пользователя: <a href="https://manuals-miwp.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-[#0055aa] hover:underline">manuals-miwp.vercel.app</a></li>
+                   </ul>
+
+                   <h3 className="font-bold text-[16px] mb-2 mt-8">Правовой статус и правообладание</h3>
+                   <ul className="list-disc pl-6 space-y-2 mb-6">
+                     <li>Названия <strong>MIWP™</strong>, <strong>Media Interface Web Program™</strong>, <strong>CWM™</strong>, <strong>CrossWebMenu™</strong> и логотипы <img src="/logo.png" className="inline-block h-6 align-middle mx-1" alt="logo" onError={(e) => e.currentTarget.style.display = 'none'} />, <img src="/logosite.png" className="inline-block h-6 align-middle mx-1" alt="logosite" onError={(e) => e.currentTarget.style.display = 'none'} /> и <img src="/MIWPstore.png" className="inline-block h-6 align-middle mx-1" alt="miwpstore" onError={(e) => e.currentTarget.style.display = 'none'} /> являются уникальными наименованиями и лицами кода и интерфейса, созданными автором проекта.</li>
+                     <li><strong>Юридический отказ от сторонних связей:</strong> Данный проект является независимым локальным веб-приложением. Он не связан, не аффилирован, не спонсируется и никак не относится к сторонним компаниям, их торговым маркам или интерфейсам. Любые визуальные совпадения являются случайными или представляют собой независимую авторскую реализацию концепта веб-меню.</li>
+                   </ul>
+
+                   <div className="border-t border-[#ccc] my-6"></div>
+                   <p className="mb-4">
+                     © Все права на код, дизайн и интерфейс CWM™ защищены автором (oorraannggee).
+                   </p>
+                 </div>
+               )}
+
+               {activeArticle === 'toc' && (
+                 <div className="text-[13.5px] text-[#222]">
+                   <h1 className="text-xl font-bold mb-6 text-black tracking-tight leading-snug">
+                     Содержание
+                   </h1>
+                   <div className="border-t border-[#ccc] my-6"></div>
+                   
+                   <div className="space-y-6">
+                     <div>
+                       <h2 className="font-bold text-[16px] mb-2">Начало</h2>
+                       <ul className="pl-6 space-y-2">
+                         <li><span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => navigateTo('main', null)}>Главная страница</span></li>
+                         <li><span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => navigateTo('document', 'about-guide')}>О данном Руководстве</span></li>
+                         <li><span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => navigateTo('document', 'copyright')}>Авторские права и торговые марки</span></li>
+                         <li><span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => navigateTo('document', 'toc')}>Содержание</span></li>
+                       </ul>
+                     </div>
+
+                     <div>
+                       <h2 className="font-bold text-[16px] mb-2"><span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => navigateTo('menu', null)}>Меню CWM™</span></h2>
+                       <ul className="pl-6 space-y-2">
+                         <li><span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => navigateTo('menu', 'cwm-overview')}>Меню CWM™ (CrossWebMenu™)</span></li>
+                       </ul>
+                     </div>
+
+                     <div>
+                       <h2 className="font-bold text-[16px] mb-2"><span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => navigateTo('settings', null)}>Настройки</span></h2>
+                       <ul className="pl-6 space-y-4">
+                         <li>
+                           <div className="font-bold mb-1">Фон</div>
+                           <ul className="pl-6 space-y-2 font-normal">
+                             <li><span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => navigateTo('settings', 'bg-color')}>Цвет фона</span></li>
+                             <li><span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => navigateTo('settings', 'bg-wave-speed')}>Скорость волны</span></li>
+                             <li><span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => navigateTo('settings', 'bg-particle-speed')}>Скорость Частиц</span></li>
+                             <li><span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => navigateTo('settings', 'bg-wave')}>Волна</span></li>
+                             <li><span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => navigateTo('settings', 'bg-particles')}>Частицы</span></li>
+                           </ul>
+                         </li>
+                         <li>
+                           <div className="font-bold mb-1">Система</div>
+                           <ul className="pl-6 space-y-2 font-normal">
+                             <li><span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => navigateTo('settings', 'sys-about-sys')}>Об системе</span></li>
+                             <li><span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => navigateTo('settings', 'sys-about-app')}>Об программе</span></li>
+                           </ul>
+                         </li>
+                       </ul>
+                     </div>
+
+                     <div>
+                       <h2 className="font-bold text-[16px] mb-2"><span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => navigateTo('photo', null)}>Фото</span></h2>
+                       <div className="pl-6 text-gray-500">Пока пусто.</div>
+                     </div>
+
+                     <div>
+                       <h2 className="font-bold text-[16px] mb-2"><span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => navigateTo('video', null)}>ТВ / видео</span></h2>
+                       <ul className="pl-6 space-y-2">
+                         <li><span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => navigateTo('video', 'tv-channels')}>ТВ каналы</span></li>
+                       </ul>
+                     </div>
+
+                     <div>
+                       <h2 className="font-bold text-[16px] mb-2"><span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => navigateTo('music', null)}>Музыка</span></h2>
+                       <div className="pl-6 text-gray-500">Пока пусто.</div>
+                     </div>
+
+                     <div>
+                       <h2 className="font-bold text-[16px] mb-2"><span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => navigateTo('game', null)}>Игра</span></h2>
+                       <div className="pl-6 text-gray-500">Пока пусто.</div>
+                     </div>
+
+                     <div>
+                       <h2 className="font-bold text-[16px] mb-2"><span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => navigateTo('network', null)}>Сеть</span></h2>
+                     </div>
+
+                     <div>
+                       <h2 className="font-bold text-[16px] mb-2"><span className="flex items-center space-x-2 text-[#0055aa] hover:underline cursor-pointer" onClick={() => navigateTo('store', null)}><img src="/MIWPstore.png" alt="MIWP Store" className="w-[20px] h-[20px] object-contain" onError={(e) => e.currentTarget.style.display = 'none'} /> <span>MIWP™ store</span></span></h2>
+                       <ul className="pl-6 space-y-2">
+                         <li><span className="text-[#0055aa] hover:underline cursor-pointer" onClick={() => navigateTo('store', 'overview')}>Обзор MIWP™ store</span></li>
+                       </ul>
+                     </div>
+                   </div>
                  </div>
                )}
              </div>
