@@ -203,7 +203,7 @@ export default function App() {
       title: 'Авторские права и торговые марки',
       section: 'document',
       article: 'copyright',
-      content: 'Авторские права и торговые марки Данный документ определяет статус интеллектуальной собственности веб-приложения MIWP™ и интерфейса CWM™. Разработчик и авторские права Автор и создатель проекта: oorraannggee. Весь исходный код веб-приложения MIWP™ (Media Interface Web Program™) и пользовательского интерфейса CWM™ (CrossWebMenu™) написан автором с нуля. Официальные ресурсы проекта. Правовой статус и правообладание Названия MIWP™, Media Interface Web Program™, CWM™, CrossWebMenu™ и логотипы являются уникальными наименованиями и лицами кода и интерфейса, созданными автором проекта. Юридический отказ от сторонних связей Все права на код, дизайн и интерфейс CWM™ защищены автором'
+      content: 'Авторские права и торговые марки Данный документ определяет статус интеллектуальной собственности веб-приложения MIWP™ и интерфейса CWM™. Разработчик и авторские права Автор и создатель проекта: oorraannggee. Весь исходный код веб-приложения MIWP™ (Media Interface Web Program™) и пользовательского интерфейса CWM™ (CrossWebMenu™) написан автором с нуля. Инфраструктура проекта построена с использованием сервисов GitHub и Firebase / Cloud Firestore. Официальные ресурсы проекта. Формат распространения MIWP™ является локальным веб-приложением. Правовой статус и правообладание Названия MIWP™, Media Interface Web Program™, CWM™, CrossWebMenu™ и логотипы созданы автором проекта с нуля. Юридический отказ от сторонних связей Все права на исходный код, графику, дизайн и интерфейс CWM™ защищены автором'
     }
   ];
 
@@ -742,30 +742,30 @@ export default function App() {
                      <img src="/tvselectchannel.png" alt="Select Channel" className="max-w-[500px] w-full" onError={(e) => e.currentTarget.style.display = 'none'} />
                    </div>
                    <p className="mb-4">
-                     Управлять ТВ-плеером можно с помощью кнопок <img src="/up.png" className="inline-block h-8 align-middle mx-1" alt="up" onError={(e) => e.currentTarget.style.display = 'none'} />, <img src="/down.png" className="inline-block h-8 align-middle mx-1" alt="down" onError={(e) => e.currentTarget.style.display = 'none'} />, <img src="/left.png" className="inline-block h-8 align-middle mx-1" alt="left" onError={(e) => e.currentTarget.style.display = 'none'} />, <img src="/right.png" className="inline-block h-8 align-middle mx-1" alt="right" onError={(e) => e.currentTarget.style.display = 'none'} />, <img src="/Enter.png" className="inline-block h-8 align-middle mx-1" alt="Enter" onError={(e) => e.currentTarget.style.display = 'none'} /> и <img src="/Backspace.png" className="inline-block h-8 align-middle mx-1" alt="Backspace" onError={(e) => e.currentTarget.style.display = 'none'} />. Также поддерживается управление мышью (ЛКМ и колёсико). 
-                   </p>
-                   <div className="my-6">
-                     <img src="/tvplayer.png" alt="TV Player" className="max-w-[500px] w-full" onError={(e) => e.currentTarget.style.display = 'none'} />
-                   </div>
-                   <h2 className="font-bold text-[14px] mb-2 mt-6">Элементы плеера:</h2>
-                   <div className="space-y-1 mb-4">
-                     <p>(1) Стоп / Пауза.</p>
-                     <p>(2) Перемотка на 1 секунду вперёд / назад.</p>
-                     <p>(3) Следующий / предыдущий канал.</p>
-                     <p>(4) Таймлайн.</p>
-                     <p>(5) Список доступных каналов.</p>
-                   </div>
-                   <div className="my-6">
-                     <img src="/channellist.png" alt="Channel List" className="max-w-[500px] w-full" onError={(e) => e.currentTarget.style.display = 'none'} />
-                   </div>
-                   <p className="mb-4">
-                     Перемещение по списку осуществляется кнопками <img src="/up.png" className="inline-block h-8 align-middle mx-1" alt="up" onError={(e) => e.currentTarget.style.display = 'none'} /> и <img src="/down.png" className="inline-block h-8 align-middle mx-1" alt="down" onError={(e) => e.currentTarget.style.display = 'none'} />, выбор — кнопкой <img src="/Enter.png" className="inline-block h-8 align-middle mx-1" alt="Enter" onError={(e) => e.currentTarget.style.display = 'none'} />. Также можно управлять мышью: навести курсор на канал, прокрутить список колёсиком и нажать ЛКМ. Для выхода из этого меню нажмите <img src="/left.png" className="inline-block h-8 align-middle mx-1" alt="left" onError={(e) => e.currentTarget.style.display = 'none'} />, <img src="/Backspace.png" className="inline-block h-8 align-middle mx-1" alt="Backspace" onError={(e) => e.currentTarget.style.display = 'none'} /> или кликните ЛКМ мимо меню.
-                   </p>
-                   <p className="mb-6">
-                     (6) Название канала.
-                   </p>
-                   
-                   <div className="border-t border-[#ccc] pt-4 mt-8">
+                      Управлять ТВ-плеером можно с помощью кнопок <img src="/up.png" className="inline-block h-8 align-middle mx-1" alt="up" onError={(e) => e.currentTarget.style.display = 'none'} />, <img src="/down.png" className="inline-block h-8 align-middle mx-1" alt="down" onError={(e) => e.currentTarget.style.display = 'none'} />, <img src="/left.png" className="inline-block h-8 align-middle mx-1" alt="left" onError={(e) => e.currentTarget.style.display = 'none'} />, <img src="/right.png" className="inline-block h-8 align-middle mx-1" alt="right" onError={(e) => e.currentTarget.style.display = 'none'} />, <img src="/Enter.png" className="inline-block h-8 align-middle mx-1" alt="Enter" onError={(e) => e.currentTarget.style.display = 'none'} /> и <img src="/Backspace.png" className="inline-block h-8 align-middle mx-1" alt="Backspace" onError={(e) => e.currentTarget.style.display = 'none'} />. Также поддерживается управление мышью (ЛКМ и колёсико). 
+                    </p>
+                    <div className="my-6">
+                      <img src="/tvplayer.png" alt="TV Player" className="max-w-[500px] w-full" onError={(e) => e.currentTarget.style.display = 'none'} />
+                    </div>
+                    <h2 className="font-bold text-[14px] mb-2 mt-6">Элементы плеера:</h2>
+                    <div className="space-y-1 mb-4">
+                      <p>(1) Стоп / Пауза.</p>
+                      <p>(2) Перемотка на 1 секунду вперёд / назад.</p>
+                      <p>(3) Следующий / предыдущий канал.</p>
+                      <p>(4) Таймлайн.</p>
+                      <p>(5) Список доступных каналов.</p>
+                    </div>
+                    <div className="my-6">
+                      <img src="/channellist.png" alt="Channel List" className="max-w-[500px] w-full" onError={(e) => e.currentTarget.style.display = 'none'} />
+                    </div>
+                    <p className="mb-4">
+                      Перемещение по списку осуществляется кнопками <img src="/up.png" className="inline-block h-8 align-middle mx-1" alt="up" onError={(e) => e.currentTarget.style.display = 'none'} /> и <img src="/down.png" className="inline-block h-8 align-middle mx-1" alt="down" onError={(e) => e.currentTarget.style.display = 'none'} />, выбор — кнопкой <img src="/Enter.png" className="inline-block h-8 align-middle mx-1" alt="Enter" onError={(e) => e.currentTarget.style.display = 'none'} />. Также можно управлять мышью: навести курсор на канал, прокрутить список колёсиком и нажать ЛКМ. Для выхода из этого меню нажмите <img src="/left.png" className="inline-block h-8 align-middle mx-1" alt="left" onError={(e) => e.currentTarget.style.display = 'none'} />, <img src="/Backspace.png" className="inline-block h-8 align-middle mx-1" alt="Backspace" onError={(e) => e.currentTarget.style.display = 'none'} /> или кликните ЛКМ мимо меню.
+                    </p>
+                    <p className="mb-6">
+                      (6) Название канала.
+                    </p>
+                    
+                    <div className="border-t border-[#ccc] pt-4 mt-8">
                      <h2 className="font-bold text-[14px] mb-2">Примечания:</h2>
                      <ul className="list-disc pl-5 space-y-1">
                        <li>Плеер подгружает трансляцию из интернета в реальном времени, поэтому для его работы необходимо активное сетевое подключение.</li>
@@ -825,6 +825,7 @@ export default function App() {
                    <ul className="list-disc pl-6 space-y-2 mb-4">
                      <li><strong>Автор и создатель проекта:</strong> oorraannggee (псевдоним разработчика).</li>
                      <li>Весь исходный код веб-приложения <strong>MIWP™ (Media Interface Web Program™)</strong> и пользовательского интерфейса <strong>CWM™ (CrossWebMenu™)</strong> написан автором с нуля.</li>
+                     <li>Инфраструктура проекта построена с использованием сервисов GitHub (для хранения исходного кода и интеграции с хостингом Vercel) и Firebase / Cloud Firestore (используется как база данных для MIWP™ Store и встроенного мессенджера).</li>
                    </ul>
 
                    <h3 className="font-bold text-[16px] mb-2 mt-8">Официальные ресурсы проекта</h3>
@@ -834,15 +835,24 @@ export default function App() {
                      <li>Руководство пользователя: <a href="https://manuals-miwp.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-[#0055aa] hover:underline">manuals-miwp.vercel.app</a></li>
                    </ul>
 
+                   <h3 className="font-bold text-[16px] mb-2 mt-8">Формат распространения</h3>
+                   <ul className="list-disc pl-6 space-y-2 mb-4">
+                     <li>MIWP™ является локальным веб-приложением, предназначенным для запуска на персональном компьютере пользователя (по умолчанию использует адрес <code>localhost:5000</code>).</li>
+                     <li>Файлы программы и ассеты MIWP™ Store размещены на платформе GitHub и доступны для свободного скачивания. Free-to-use статус приложения не отменяет авторских прав на его исходный код.</li>
+                   </ul>
+
                    <h3 className="font-bold text-[16px] mb-2 mt-8">Правовой статус и правообладание</h3>
                    <ul className="list-disc pl-6 space-y-2 mb-6">
-                     <li>Названия <strong>MIWP™</strong>, <strong>Media Interface Web Program™</strong>, <strong>CWM™</strong>, <strong>CrossWebMenu™</strong> и логотипы <img src="/logo.png" className="inline-block h-6 align-middle mx-1" alt="logo" onError={(e) => e.currentTarget.style.display = 'none'} />, <img src="/logosite.png" className="inline-block h-6 align-middle mx-1" alt="logosite" onError={(e) => e.currentTarget.style.display = 'none'} /> и <img src="/MIWPstore.png" className="inline-block h-6 align-middle mx-1" alt="miwpstore" onError={(e) => e.currentTarget.style.display = 'none'} /> являются уникальными наименованиями и лицами кода и интерфейса, созданными автором проекта.</li>
-                     <li><strong>Юридический отказ от сторонних связей:</strong> Данный проект является независимым локальным веб-приложением. Он не связан, не аффилирован, не спонсируется и никак не относится к сторонним компаниям, их торговым маркам или интерфейсам. Любые визуальные совпадения являются случайными или представляют собой независимую авторскую реализацию концепта веб-меню.</li>
+                     <li>Названия <strong>MIWP™</strong>, <strong>Media Interface Web Program™</strong>, <strong>CWM™</strong>, <strong>CrossWebMenu™</strong>, а также логотипы <img src="/logo.png" className="inline-block h-6 align-middle mx-1" alt="logo" onError={(e) => e.currentTarget.style.display = 'none'} />, <img src="/logosite.png" className="inline-block h-6 align-middle mx-1" alt="logosite" onError={(e) => e.currentTarget.style.display = 'none'} /> и <img src="/MIWPstore.png" className="inline-block h-6 align-middle mx-1" alt="miwpstore" onError={(e) => e.currentTarget.style.display = 'none'} /> созданы автором проекта с нуля. Они являются уникальными наименованиями и визуальным лицом кода и интерфейса.</li>
+                     <li><strong>Юридический отказ от сторонних связей:</strong> Данный проект является независимым локальным веб-приложением. Он не связан, не аффилирован, не спонсируется и никак не относится к сторонним компаниям, их торговым маркам или интерфейсам. Любые визуальные совпадения представляют собой независимую авторскую реализацию концепта веб-меню.</li>
                    </ul>
 
                    <div className="border-t border-[#ccc] my-6"></div>
+                   <p className="mb-2">
+                     © Все права на исходный код, графику, дизайн и интерфейс CWM™ защищены автором (oorraannggee). 
+                   </p>
                    <p className="mb-4">
-                     © Все права на код, дизайн и интерфейс CWM™ защищены автором (oorraannggee).
+                     Проект распространяется в соответствии с условиями лицензии, размещённой в официальном репозитории на GitHub. Любое несанкционированное копирование кода или выдача проекта за свой собственный являются нарушением авторских прав.
                    </p>
                  </div>
                )}
@@ -947,7 +957,7 @@ export default function App() {
       {/* Footer */}
       <footer className="bg-gradient-to-b from-[#3a3a3a] to-[#050505] text-[#b3b3b3] text-[11px] px-6 py-2 border-t border-[#4a4a4a] flex justify-center shrink-0">
         <div className="flex w-full max-w-[1024px] justify-between items-center">
-          <div>23.05.2026-27.05.2026 © MIWP oorraannggee. Все права защищены.</div>
+          <div>23.05.2026-23.05.2026 © MIWP oorraannggee. Все права защищены.</div>
           <div className="flex items-center space-x-2">
              {activeSection !== 'main' && (
                <button 
